@@ -3,6 +3,9 @@ source "https://rubygems.org"
 # Specify your gem's dependencies in athena_admin.gemspec.
 gemspec
 
+# Full Rails for the dummy app / test harness (gemspec runtime deps stay minimal).
+gem "rails"
+
 gem "puma"
 
 gem "sqlite3"
