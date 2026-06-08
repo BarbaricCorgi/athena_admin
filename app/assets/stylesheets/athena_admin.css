@@ -1,0 +1,70 @@
+/* Athena — Ember. Tailwind v4 design tokens + components. */
+/* Self-hosted fonts served statically from public/athena-fonts (copied by the installer). */
+@font-face { font-family:"Inter"; font-weight:400; font-display:swap; src:url("/athena-fonts/Inter-Regular.woff2") format("woff2"); }
+@font-face { font-family:"Inter"; font-weight:600; font-display:swap; src:url("/athena-fonts/Inter-SemiBold.woff2") format("woff2"); }
+@font-face { font-family:"Inter"; font-weight:700; font-display:swap; src:url("/athena-fonts/Inter-Bold.woff2") format("woff2"); }
+@font-face { font-family:"JetBrains Mono"; font-weight:400; font-display:swap; src:url("/athena-fonts/JetBrainsMono-Regular.woff2") format("woff2"); }
+@font-face { font-family:"JetBrains Mono"; font-weight:500; font-display:swap; src:url("/athena-fonts/JetBrainsMono-Medium.woff2") format("woff2"); }
+
+@theme {
+  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", "SF Mono", ui-monospace, monospace;
+
+  /* Ember — dark reference values (light/dark resolved via --athena-* below) */
+  --color-ember-bg: #0A0A0B;
+  --color-ember-panel: #100C09;
+  --color-ember-surface: #16110D;
+  --color-ember-surface2: #1C1611;
+  --color-ember-line: #241A12;
+  --color-ember-line2: #2E2118;
+  --color-ember-text: #F5EDE6;
+  --color-ember-muted: #8C8076;
+  --color-ember-dim: #5E554D;
+  --color-fire-1: #FF6A00;
+  --color-fire-2: #FF2D00;
+  --color-pos: #34D399;
+  --color-neg: #F87171;
+  --color-amber: #F59E0B;
+
+  --radius-athena: 13px;
+}
+
+/* Light is the base (html without .dark); dark tokens apply under .dark. */
+:root {
+  --athena-bg: #FAF6F1; --athena-panel: #FFFFFF; --athena-surface: #FFFFFF;
+  --athena-surface2: #F6F0E8; --athena-line: #ECE2D5; --athena-line2: #E2D6C5;
+  --athena-text: #1A1411; --athena-muted: #8A7E72; --athena-dim: #B3A899;
+  --athena-fire1: #FF6A00; --athena-fire2: #F23005;
+  --athena-pos: #15803D; --athena-neg: #DC2626; --athena-amber: #B45309;
+}
+.dark {
+  --athena-bg: #0A0A0B; --athena-panel: #100C09; --athena-surface: #16110D;
+  --athena-surface2: #1C1611; --athena-line: #241A12; --athena-line2: #2E2118;
+  --athena-text: #F5EDE6; --athena-muted: #8C8076; --athena-dim: #5E554D;
+  --athena-fire1: #FF6A00; --athena-fire2: #FF2D00;
+  --athena-pos: #34D399; --athena-neg: #F87171; --athena-amber: #F59E0B;
+}
+
+@layer components {
+  .athena-fire-text {
+    background: linear-gradient(90deg, var(--athena-fire1), var(--athena-fire2));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .athena-btn-fire {
+    background: linear-gradient(90deg, var(--athena-fire1), var(--athena-fire2));
+    color: #fff; border: none; border-radius: 9px; padding: 8px 13px;
+    font-weight: 600; box-shadow: 0 6px 18px rgba(242,48,5,.30); cursor: pointer;
+  }
+  .athena-tag { font-size: 10.5px; font-weight: 700; padding: 3px 9px; border-radius: 999px; }
+  .athena-tag-posted   { background: color-mix(in srgb, var(--athena-pos) 16%, transparent); color: var(--athena-pos); }
+  .athena-tag-pending  { background: color-mix(in srgb, var(--athena-amber) 16%, transparent); color: var(--athena-amber); }
+  .athena-tag-vanished { background: color-mix(in srgb, var(--athena-muted) 16%, transparent); color: var(--athena-muted); }
+  .athena-num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+  .athena-card { background: var(--athena-surface); border: 1px solid var(--athena-line); border-radius: var(--radius-athena); }
+  .athena-fab {
+    position: fixed; right: 16px; bottom: 18px; width: 52px; height: 52px;
+    border-radius: 16px; display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(150deg, var(--athena-fire1), var(--athena-fire2));
+    color: #fff; box-shadow: 0 10px 24px rgba(242,48,5,.45); z-index: 40;
+  }
+}
