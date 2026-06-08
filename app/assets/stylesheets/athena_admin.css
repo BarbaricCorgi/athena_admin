@@ -29,6 +29,48 @@
   --radius-athena: 13px;
 }
 
+/* Recolor: remap Tailwind's neutral scale to WARM Ember tones (dark ends pushed to
+   Ember near-blacks). AA4's chrome uses bg-white / gray-50…950 + dark: variants, so this
+   single remap re-skins the whole admin in both modes without touching partials. */
+@theme {
+  --color-white: #ffffff;
+  --color-gray-50:  #F7F3EE;
+  --color-gray-100: #EFE9E0;
+  --color-gray-200: #E7DCCD; /* light borders */
+  --color-gray-300: #D6C8B6;
+  --color-gray-400: #A99C8E; /* muted */
+  --color-gray-500: #8A7E72;
+  --color-gray-600: #6B6055; /* light secondary text */
+  --color-gray-700: #2E2218; /* dark borders (warm) */
+  --color-gray-800: #1C1611; /* dark elevated */
+  --color-gray-900: #16110D; /* dark surface */
+  --color-gray-950: #0A0A0B; /* dark bg */
+}
+
+/* Accent remap: AA4's chrome (focus rings, checkboxes, buttons, links) is hardwired to
+   Tailwind's `blue` scale (see activeadmin plugin.js: colors.blue.600), and scaffolds use
+   `indigo`. Remap BOTH to the Ember fire scale so every accent burns orange in one stroke.
+   600 is AA's primary accent → fire red-orange; 500 → fire orange. */
+@theme {
+  --color-blue-50:  #FFF3EC; --color-indigo-50:  #FFF3EC;
+  --color-blue-100: #FFE3D2; --color-indigo-100: #FFE3D2;
+  --color-blue-200: #FFC9A8; --color-indigo-200: #FFC9A8;
+  --color-blue-300: #FFA770; --color-indigo-300: #FFA770;
+  --color-blue-400: #FF8438; --color-indigo-400: #FF8438;
+  --color-blue-500: #FF6A00; --color-indigo-500: #FF6A00; /* fire1 */
+  --color-blue-600: #F23005; --color-indigo-600: #F23005; /* fire2 — primary accent */
+  --color-blue-700: #C41F00; --color-indigo-700: #C41F00;
+  --color-blue-800: #9A1C04; --color-indigo-800: #9A1C04;
+  --color-blue-900: #7C1D0A; --color-indigo-900: #7C1D0A;
+  --color-blue-950: #430D03; --color-indigo-950: #430D03;
+}
+
+@layer base {
+  body { font-family: var(--font-sans); }
+  /* warm paper page background in light mode (AA body is bg-white dark:bg-gray-950) */
+  body { background-color: var(--athena-bg); }
+}
+
 /* Light is the base (html without .dark); dark tokens apply under .dark. */
 :root {
   --athena-bg: #FAF6F1; --athena-panel: #FFFFFF; --athena-surface: #FFFFFF;
@@ -66,5 +108,414 @@
     border-radius: 16px; display: flex; align-items: center; justify-content: center;
     background: linear-gradient(150deg, var(--athena-fire1), var(--athena-fire2));
     color: #fff; box-shadow: 0 10px 24px rgba(242,48,5,.45); z-index: 40;
+  }
+
+  /* ── Ember Command Rail (main navigation) ─────────────────────────────────────── */
+  #main-menu.athena-rail {
+    /* ember glow bleeding down from the top of the rail */
+    background:
+      radial-gradient(135% 50% at 50% -8%, color-mix(in srgb, var(--athena-fire2) 9%, transparent), transparent 72%),
+      var(--athena-bg);
+    border-inline-end: 1px solid var(--athena-line);
+  }
+  .athena-rail-cap {
+    margin: 4px 8px 12px; font-family: var(--font-mono);
+    font-size: 10px; font-weight: 600; letter-spacing: .22em; text-transform: uppercase;
+    color: var(--athena-dim);
+  }
+
+  .athena-nav {
+    position: relative; display: flex; align-items: center; gap: 11px;
+    padding: 8px 10px; border-radius: 12px; text-decoration: none;
+    font-size: 13.5px; font-weight: 500; color: var(--athena-muted);
+    border: 1px solid transparent;
+    transition: background .18s, color .18s, border-color .18s, transform .12s, box-shadow .18s;
+  }
+  .athena-nav:hover { color: var(--athena-text); background: var(--athena-surface2); transform: translateX(2px); }
+
+  .athena-nav-ic {
+    flex: 0 0 auto; width: 31px; height: 31px; display: grid; place-items: center;
+    border-radius: 9px; color: var(--athena-muted);
+    background: var(--athena-surface2); border: 1px solid var(--athena-line2);
+    transition: all .18s;
+  }
+  .athena-nav-ic svg { width: 17px; height: 17px; }
+  .athena-nav:hover .athena-nav-ic {
+    color: var(--athena-fire1);
+    border-color: color-mix(in srgb, var(--athena-fire1) 45%, var(--athena-line2));
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--athena-fire1) 9%, transparent);
+  }
+  .athena-nav-label { flex: 1 1 auto; min-width: 0; }
+  .athena-nav-spark { width: 6px; height: 6px; border-radius: 99px; background: transparent; flex: 0 0 auto; }
+
+  /* Active: fire-tinted pill, glowing icon tile, glowing left bar */
+  .athena-nav.is-active {
+    color: #fff; font-weight: 600;
+    background: linear-gradient(95deg,
+      color-mix(in srgb, var(--athena-fire2) 24%, transparent),
+      color-mix(in srgb, var(--athena-fire1) 9%, transparent));
+    border-color: color-mix(in srgb, var(--athena-fire1) 26%, transparent);
+    box-shadow: 0 10px 26px -12px rgba(242, 48, 5, .75);
+  }
+  .athena-nav.is-active .athena-nav-ic {
+    color: #fff; border-color: transparent;
+    background: linear-gradient(150deg, var(--athena-fire1), var(--athena-fire2));
+    box-shadow: 0 5px 14px -3px rgba(242, 48, 5, .65);
+  }
+  .athena-nav.is-active .athena-nav-spark {
+    background: var(--athena-fire1); box-shadow: 0 0 9px 1px var(--athena-fire1);
+  }
+  .athena-nav.is-active::before {
+    content: ""; position: absolute; inset-inline-start: -3px; top: 50%; transform: translateY(-50%);
+    width: 3px; height: 22px; border-radius: 99px;
+    background: linear-gradient(180deg, var(--athena-fire1), var(--athena-fire2));
+    box-shadow: 0 0 11px 1px var(--athena-fire1);
+  }
+
+  /* Parent (section) rows + caret */
+  .athena-nav-parent { cursor: pointer; }
+  .athena-nav-caret { width: 16px; height: 16px; flex: 0 0 auto; color: var(--athena-dim); transition: transform .18s; }
+
+  /* Sub-navigation */
+  .athena-subnav { margin: 4px 0 2px; padding-inline-start: 18px;
+    border-inline-start: 1px solid var(--athena-line2); margin-inline-start: 23px; }
+  .athena-subnav-link {
+    display: flex; align-items: center; gap: 9px; padding: 6px 9px; border-radius: 9px;
+    font-size: 13px; color: var(--athena-muted); text-decoration: none; transition: all .15s;
+  }
+  .athena-subnav-link:hover { color: var(--athena-text); background: var(--athena-surface2); }
+  .athena-subnav-dot { width: 5px; height: 5px; border-radius: 99px; background: var(--athena-dim); flex: 0 0 auto; transition: all .15s; }
+  .athena-subnav-link.is-active { color: var(--athena-fire1); font-weight: 600; }
+  .athena-subnav-link.is-active .athena-subnav-dot { background: var(--athena-fire1); box-shadow: 0 0 8px 1px var(--athena-fire1); }
+}
+
+/* The whole paginated collection — table + "Showing…" + download footer — is ONE ember
+   panel, so they share a single border and radius (instead of AA's outer .paginated-collection
+   box nesting around our inner table box, which produced a double, mismatched-radius border).
+   The inner .index-as-table is just the horizontal scroll container for wide tables. */
+.paginated-collection {
+  border: 1px solid var(--athena-line2);
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--athena-surface);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--athena-fire1) 8%, transparent),
+    0 18px 42px -28px rgba(0, 0, 0, .6);
+}
+.index-as-table { overflow-x: auto; }
+/* footer rows (pagination info + downloads) sit inside the panel, divided from the table */
+.paginated-collection-pagination,
+.paginated-collection-footer {
+  padding: 11px 14px; border-top: 1px solid var(--athena-line);
+  font-size: 13px; color: var(--athena-muted);
+}
+
+/* Mobile/tablet-portrait: restack the index table into Ember cards. The _html_head enhancer
+   stamps each cell with data-label from its column header; here we surface those as labels. */
+@media (max-width: 767px) {
+  /* cards provide their own borders — drop the panel chrome so they aren't double-boxed */
+  .index-as-table { overflow-x: visible; }
+  .paginated-collection { border: 0; border-radius: 0; box-shadow: none; background: transparent; overflow: visible; }
+  .paginated-collection-pagination, .paginated-collection-footer { padding-inline: 0; }
+  .index-as-table table.data-table,
+  .index-as-table table.data-table tbody { display: block; width: 100%; }
+  .index-as-table table.data-table thead { display: none; }
+
+  .index-as-table table.data-table tr {
+    display: block; margin-bottom: 12px; padding: 4px 13px;
+    background: var(--athena-surface);
+    border: 1px solid var(--athena-line); border-radius: var(--radius-athena);
+  }
+  .index-as-table table.data-table td {
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    padding: 9px 0; border: 0; border-bottom: 1px solid var(--athena-line);
+    text-align: end; white-space: normal;
+  }
+  .index-as-table table.data-table tr td:last-child { border-bottom: 0; }
+  .index-as-table table.data-table td::before {
+    content: attr(data-label); text-align: start;
+    font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase;
+    color: var(--athena-muted); flex: 0 0 auto;
+  }
+  /* selection checkbox has no column header → left-align, drop the empty label gap */
+  .index-as-table table.data-table td:not([data-label]) { justify-content: flex-start; }
+  .index-as-table table.data-table td:not([data-label])::before { content: none; }
+
+  /* Row actions become a full-width, evenly-spaced, touch-friendly button row. */
+  .index-as-table table.data-table td:has(.data-table-resource-actions) { padding-top: 4px; }
+  .index-as-table table.data-table .data-table-resource-actions {
+    display: flex; width: 100%; gap: 8px;
+  }
+  .index-as-table table.data-table .data-table-resource-actions a {
+    flex: 1; text-align: center; padding: 9px 10px; font-weight: 600;
+    border: 1px solid var(--athena-line2); border-radius: 9px;
+    background: var(--athena-surface2); text-decoration: none;
+  }
+}
+
+/* ════ Ember component pass — "same intensity" art across the whole admin ════ */
+/* Declared in a trailing `athena` layer so these overrides outrank ActiveAdmin's plugin
+   defaults (which live in the `components` layer and would otherwise win on layer order,
+   e.g. doubling the row border by styling both tbody>tr AND our td). */
+@layer athena {
+
+  /* ── Top bar ─────────────────────────────────────────────────────────────────── */
+  .athena-topbar {
+    background: color-mix(in srgb, var(--athena-panel) 82%, transparent);
+    border-bottom: 1px solid var(--athena-line);
+    box-shadow:
+      inset 0 -1px 0 color-mix(in srgb, var(--athena-fire1) 16%, transparent),
+      0 8px 24px -14px rgba(0, 0, 0, .7);
+  }
+  .athena-brand-mark {
+    width: 30px; height: 30px; flex: 0 0 auto; border-radius: 9px; display: grid; place-items: center;
+    background: linear-gradient(150deg, var(--athena-fire1), var(--athena-fire2));
+    box-shadow: 0 5px 14px -3px rgba(242, 48, 5, .6), inset 0 1px 0 rgba(255, 255, 255, .28);
+  }
+  .athena-brand-mark svg { width: 17px; height: 17px; }
+  .athena-brand-word {
+    letter-spacing: .14em;
+    background: linear-gradient(90deg, var(--athena-fire1), var(--athena-fire2));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .athena-icon-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 38px; height: 38px; border-radius: 10px; cursor: pointer;
+    color: var(--athena-muted); background: transparent; border: 1px solid transparent;
+    transition: color .16s, background .16s, border-color .16s, box-shadow .16s;
+  }
+  .athena-icon-btn:hover {
+    color: var(--athena-fire1); background: var(--athena-surface2);
+    border-color: color-mix(in srgb, var(--athena-fire1) 32%, var(--athena-line2));
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--athena-fire1) 8%, transparent);
+  }
+  .athena-menu {
+    background: var(--athena-surface); border: 1px solid var(--athena-line2); border-radius: 12px;
+    box-shadow: 0 20px 46px -14px rgba(0, 0, 0, .65); overflow: hidden;
+  }
+  .athena-menu-item { padding: 8px 14px; color: var(--athena-text); transition: background .14s, color .14s; }
+  .athena-menu-item:hover { background: var(--athena-surface2); color: var(--athena-fire1); }
+  .athena-menu-danger:hover { color: var(--athena-neg); }
+
+  /* ── Page header ─────────────────────────────────────────────────────────────── */
+  [data-test-page-header] {
+    background:
+      radial-gradient(130% 130% at 0% 0%, color-mix(in srgb, var(--athena-fire2) 8%, transparent), transparent 46%),
+      var(--athena-surface2);
+    border-bottom: 1px solid var(--athena-line);
+  }
+  [data-test-page-header] h2 { position: relative; padding-inline-start: 15px; }
+  [data-test-page-header] h2::before {
+    content: ""; position: absolute; inset-inline-start: 0; top: 50%; transform: translateY(-50%);
+    width: 4px; height: 1.05em; border-radius: 99px;
+    background: linear-gradient(180deg, var(--athena-fire1), var(--athena-fire2));
+    box-shadow: 0 0 11px 0 var(--athena-fire1);
+  }
+
+  /* ── Buttons ─────────────────────────────────────────────────────────────────── */
+  /* Primary — fire gradient + glow (submits, filter button) */
+  .filters-form-submit,
+  input[type="submit"],
+  button[type="submit"] {
+    background: linear-gradient(95deg, var(--athena-fire1), var(--athena-fire2)) !important;
+    color: #fff !important; border: none !important; border-radius: 10px !important;
+    font-weight: 600 !important; padding: 9px 17px !important; cursor: pointer;
+    box-shadow: 0 10px 24px -8px rgba(242, 48, 5, .55) !important;
+    transition: box-shadow .16s, transform .1s !important;
+  }
+  .filters-form-submit:hover,
+  input[type="submit"]:hover,
+  button[type="submit"]:hover { box-shadow: 0 13px 32px -6px rgba(242, 48, 5, .72) !important; }
+  .filters-form-submit:active,
+  input[type="submit"]:active,
+  button[type="submit"]:active { transform: translateY(1px); }
+
+  /* Secondary — outline action item with fire hover (e.g. New User) */
+  .action-item-button {
+    display: inline-flex; align-items: center; gap: 7px;
+    padding: 8px 14px; border-radius: 10px; font-weight: 600; font-size: 13.5px;
+    color: var(--athena-text); text-decoration: none;
+    background: var(--athena-surface); border: 1px solid var(--athena-line2);
+    transition: color .16s, border-color .16s, box-shadow .16s, transform .1s;
+  }
+  .action-item-button:hover {
+    color: var(--athena-fire1);
+    border-color: color-mix(in srgb, var(--athena-fire1) 48%, var(--athena-line2));
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--athena-fire1) 8%, transparent);
+    transform: translateY(-1px);
+  }
+
+  /* ── Index table ─────────────────────────────────────────────────────────────── */
+  .data-table { border-collapse: separate; border-spacing: 0; width: 100%; }
+
+  /* header band */
+  .data-table thead tr { background: var(--athena-surface2); }
+  .data-table thead th {
+    padding: 12px 12px; text-align: start;
+    font-family: var(--font-mono); font-size: 10.5px; font-weight: 600;
+    letter-spacing: .1em; text-transform: uppercase; color: var(--athena-muted);
+    border-bottom: 1px solid color-mix(in srgb, var(--athena-fire1) 22%, var(--athena-line2));
+    white-space: nowrap;
+  }
+  .data-table thead th a { color: inherit; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; }
+  .data-table thead th a:hover { color: var(--athena-fire1); }
+
+  /* row rhythm + hover glow with inset fire bar */
+  .data-table tbody td {
+    padding: 11px 10px; border-bottom: 1px solid var(--athena-line);
+    vertical-align: middle;
+  }
+  .data-table tbody tr:last-child td { border-bottom: 0; }
+  /* AA styles the divider on tbody>tr; we draw ours on td — kill theirs to avoid a double line */
+  .data-table tbody tr { border-bottom: 0; transition: background .14s, box-shadow .14s; }
+  .data-table tbody tr:hover { background: color-mix(in srgb, var(--athena-fire1) 7%, transparent); }
+  .data-table tbody tr:hover td:first-child { box-shadow: inset 3px 0 0 0 var(--athena-fire1); }
+
+  /* numeric admin links read mono; the ID column becomes a fire rank chip (targeted by the
+     data-label the _html_head enhancer stamps, so it's column-position independent). */
+  .data-table tbody td > a[href*="/admin/"]:not(.data-table-resource-actions a) { font-family: var(--font-mono); }
+  .data-table tbody td[data-label="Id" i] > a {
+    display: inline-flex; align-items: center; justify-content: center; min-width: 28px;
+    padding: 2px 9px; border-radius: 7px; font-size: 12px; font-weight: 600;
+    color: var(--athena-fire1); text-decoration: none;
+    background: color-mix(in srgb, var(--athena-fire1) 12%, transparent);
+    border: 1px solid color-mix(in srgb, var(--athena-fire1) 26%, transparent);
+    transition: background .14s, box-shadow .14s;
+  }
+  .data-table tbody td[data-label="Id" i] > a:hover {
+    background: color-mix(in srgb, var(--athena-fire1) 20%, transparent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--athena-fire1) 10%, transparent);
+  }
+
+  /* temporal & numeric columns → mono tabular numerics (the Ember data-console look),
+     keyed off the stamped data-label so text columns (name/email) stay in Inter. */
+  .data-table tbody td[data-label*="at" i],
+  .data-table tbody td[data-label*="date" i],
+  .data-table tbody td[data-label*="amount" i],
+  .data-table tbody td[data-label*="balance" i],
+  .data-table tbody td[data-label*="total" i],
+  .data-table tbody td[data-label*="price" i],
+  .data-table tbody td[data-label*="qty" i],
+  .data-table tbody td[data-label*="count" i],
+  .data-table tbody td[data-label*="number" i] {
+    font-family: var(--font-mono); font-variant-numeric: tabular-nums;
+    font-size: 12px; letter-spacing: -.02em; color: var(--athena-muted);
+  }
+
+  /* row action links: muted ghost chips that light fire (delete → danger) on hover */
+  .data-table-resource-actions { display: inline-flex; align-items: center; gap: 3px; }
+  .data-table-resource-actions a {
+    display: inline-flex; align-items: center; padding: 4px 8px; border-radius: 7px;
+    font-size: 12.5px; font-weight: 600; text-decoration: none;
+    color: var(--athena-muted); border: 1px solid transparent;
+    transition: color .14s, background .14s, border-color .14s;
+  }
+  .data-table-resource-actions a:hover {
+    color: var(--athena-fire1);
+    background: color-mix(in srgb, var(--athena-fire1) 12%, transparent);
+    border-color: color-mix(in srgb, var(--athena-fire1) 28%, transparent);
+  }
+  .data-table-resource-actions a[data-method="delete"]:hover {
+    color: var(--athena-neg);
+    background: color-mix(in srgb, var(--athena-neg) 12%, transparent);
+    border-color: color-mix(in srgb, var(--athena-neg) 30%, transparent);
+  }
+
+  /* export links → mono chip buttons (CSV / XML / JSON) */
+  div:has(> a[href$=".csv"]) { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  div:has(> a[href$=".csv"]) > span {
+    font-family: var(--font-mono); font-size: 10.5px; font-weight: 600;
+    letter-spacing: .12em; text-transform: uppercase; color: var(--athena-dim);
+  }
+  a[href$=".csv"], a[href$=".xml"], a[href$=".json"] {
+    display: inline-flex; align-items: center; gap: 6px; padding: 5px 12px; border-radius: 8px;
+    font-family: var(--font-mono); font-size: 12px; font-weight: 600; text-decoration: none;
+    color: var(--athena-muted); background: var(--athena-surface); border: 1px solid var(--athena-line2);
+    transition: color .14s, border-color .14s, box-shadow .14s, transform .1s;
+  }
+  a[href$=".csv"]:hover, a[href$=".xml"]:hover, a[href$=".json"]:hover {
+    color: var(--athena-fire1);
+    border-color: color-mix(in srgb, var(--athena-fire1) 42%, var(--athena-line2));
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--athena-fire1) 8%, transparent);
+    transform: translateY(-1px);
+  }
+
+  /* ── Attributes table (show) → ember panel ───────────────────────────────────── */
+  .attributes-table {
+    background: var(--athena-surface); border: 1px solid var(--athena-line2);
+    border-radius: 14px; overflow: hidden;
+    box-shadow:
+      inset 0 1px 0 color-mix(in srgb, var(--athena-fire1) 9%, transparent),
+      0 18px 42px -26px rgba(0, 0, 0, .65);
+  }
+  .attributes-table th {
+    font-family: var(--font-mono); font-size: 10.5px; font-weight: 600;
+    letter-spacing: .08em; text-transform: uppercase; color: var(--athena-muted);
+    background: var(--athena-surface2);
+  }
+  .attributes-table tr + tr th, .attributes-table tr + tr td { border-top: 1px solid var(--athena-line); }
+
+  /* ── Filters panel → ember card ──────────────────────────────────────────────── */
+  .filters-form {
+    background: var(--athena-surface); border: 1px solid var(--athena-line2);
+    border-radius: 14px; padding: 16px 16px 6px;
+    box-shadow:
+      inset 0 1px 0 color-mix(in srgb, var(--athena-fire1) 8%, transparent),
+      0 18px 42px -28px rgba(0, 0, 0, .6);
+  }
+  .filters-form-title {
+    font-family: var(--font-mono); text-transform: uppercase; letter-spacing: .14em;
+    font-size: 12px; font-weight: 600; color: var(--athena-text);
+    display: flex; align-items: center; gap: 8px; margin-bottom: 14px;
+  }
+  .filters-form-title::before {
+    content: ""; width: 4px; height: 14px; border-radius: 99px;
+    background: linear-gradient(180deg, var(--athena-fire1), var(--athena-fire2));
+    box-shadow: 0 0 9px 0 var(--athena-fire1);
+  }
+  .filters-form-field { margin-bottom: 14px; }
+  .filters-form-field > label.label {
+    display: block; margin-bottom: 6px;
+    font-size: 11px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase;
+    color: var(--athena-muted);
+  }
+  /* string filter: operator select stacks above the value input (keeps each readable in the
+     narrow sidebar instead of crushing the "Contains/Equals/…" select to a sliver). */
+  .filters-form-input-group { display: flex; flex-direction: column; gap: 7px; }
+  .filters-form-input-group > select { width: 100%; font-size: 12.5px; color: var(--athena-muted); }
+  .filters-form-input-group > input { width: 100%; min-width: 0; }
+  /* date range: two inputs side by side */
+  .date_range .filters-form-input-group { flex-direction: row; gap: 8px; }
+  .date_range .filters-form-input-group input { flex: 1 1 0; width: auto; min-width: 0; }
+  /* consistent fire focus on every filter control */
+  .filters-form input:focus, .filters-form select:focus {
+    border-color: var(--athena-fire1) !important;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--athena-fire1) 18%, transparent) !important;
+  }
+  /* button row */
+  .filters-form-buttons {
+    display: flex; align-items: center; gap: 12px;
+    margin-top: 4px; padding-top: 14px; border-top: 1px solid var(--athena-line);
+  }
+  .filters-form-clear {
+    font-size: 12.5px; font-weight: 600; color: var(--athena-muted); text-decoration: none;
+    transition: color .14s;
+  }
+  .filters-form-clear:hover { color: var(--athena-fire1); }
+
+  /* ── Status tags ─────────────────────────────────────────────────────────────── */
+  .status_tag, .status-tag {
+    font-family: var(--font-mono); font-size: 10.5px; font-weight: 700; letter-spacing: .04em;
+    padding: 3px 9px; border-radius: 999px; text-transform: uppercase;
+    background: color-mix(in srgb, var(--athena-muted) 16%, transparent); color: var(--athena-muted);
+  }
+  .status_tag.yes, .status_tag.completed, .status_tag.active, .status_tag.published, .status_tag.posted {
+    background: color-mix(in srgb, var(--athena-pos) 16%, transparent); color: var(--athena-pos);
+  }
+  .status_tag.no, .status_tag.error, .status_tag.failed, .status_tag.declined {
+    background: color-mix(in srgb, var(--athena-neg) 16%, transparent); color: var(--athena-neg);
+  }
+  .status_tag.warning, .status_tag.pending {
+    background: color-mix(in srgb, var(--athena-amber) 16%, transparent); color: var(--athena-amber);
   }
 }

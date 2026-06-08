@@ -1,0 +1,65 @@
+<%#
+  Athena "Ember Command Rail" — artful main navigation.
+  Keeps AA's #main-menu container + translate classes intact (Flowbite drawer toggle),
+  and restyles items as icon-tile rows with a glowing fire active state.
+%>
+<%
+  athena_nav_icon = lambda do |label|
+    case label.to_s.strip.downcase
+    when "dashboard"
+      '<rect x="3" y="3" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="2"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="2"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="2"/>'
+    when "users", "admin users", "accounts"
+      '<path stroke-linecap="round" stroke-linejoin="round" d="M15 19.5a6 6 0 0 0-12 0M9 11.25a3.75 3.75 0 1 0 0-7.5 3.75 3.75 0 0 0 0 7.5ZM21 19.5a5.99 5.99 0 0 0-4.5-5.805M15.75 3.97a3.75 3.75 0 0 1 0 7.06"/>'
+    when "transactions", "ledger"
+      '<path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-9L21 3m0 0-4.5 4.5M21 3H7.5"/>'
+    when "loans", "charity", "budget"
+      '<path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33"/>'
+    when "properties", "real estate"
+      '<path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21"/>'
+    when "businessmen", "people", "motivation"
+      '<path stroke-linecap="round" stroke-linejoin="round" d="M18 18.72a9.094 9.094 0 0 0 3.741-.479 3 3 0 0 0-4.682-2.72m.94 3.198.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0 1 12 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 0 1 6 18.719m12 0a5.971 5.971 0 0 0-.941-3.197m0 0A5.995 5.995 0 0 0 12 12.75a5.995 5.995 0 0 0-5.058 2.772m0 0a3 3 0 0 0-4.681 2.72 8.986 8.986 0 0 0 3.74.477m.94-3.197a5.971 5.971 0 0 0-.94 3.197M15 6.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5 0a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z"/>'
+    else
+      '<path stroke-linecap="round" stroke-linejoin="round" d="M12 3c1.6 3.2 4.5 4.6 4.5 8.2a4.5 4.5 0 1 1-9 0c0-1.3.5-2.4 1.3-3.2.3 1.1 1 1.8 1.9 2C10.5 7.6 10.6 5.2 12 3Z"/>'
+    end
+  end
+%>
+<div id="main-menu" class="athena-rail fixed top-0 xl:top-16 bottom-0 inset-s-0 z-40 w-72 xl:w-60 p-3 overflow-y-auto transition-transform duration-200 -translate-x-full xl:translate-x-0" tabindex="-1">
+  <p class="athena-rail-cap">Navigation</p>
+  <ul role="list" class="flex flex-1 flex-col gap-1">
+    <% current_menu.items(self).each do |item| %>
+      <% children = item.items(self).presence %>
+      <% url = item.url(self) %>
+      <% active = current_menu_item?(item, children: false) %>
+      <li class="athena-nav-li group" <%= "data-open" if current_menu_item?(item) %> data-item-id="<%= item.id %>">
+        <% if children %>
+          <button data-menu-button class="athena-nav athena-nav-parent w-full" aria-label="<%= t('active_admin.toggle_section') %>">
+            <span class="athena-nav-ic">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><%== athena_nav_icon.call(item.label(self)) %></svg>
+            </span>
+            <span class="athena-nav-label"><%= item.label(self) %></span>
+            <svg class="athena-nav-caret group-data-open:rotate-90 rtl:-scale-x-100" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+              <path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 0 1 .02-1.06L11.168 10 7.23 6.29a.75.75 0 1 1 1.04-1.08l4.5 4.25a.75.75 0 0 1 0 1.08l-4.5 4.25a.75.75 0 0 1-1.06-.02z" clip-rule="evenodd" />
+            </svg>
+          </button>
+          <ul role="list" class="athena-subnav hidden group-data-open:block">
+            <% children.each do |j| %>
+              <li data-item-id="<%= j.id %>">
+                <%= link_to j.url(self), j.html_options.merge(class: "athena-subnav-link #{'is-active' if current_menu_item?(j)}") do %>
+                  <span class="athena-subnav-dot"></span><%= j.label(self) %>
+                <% end %>
+              </li>
+            <% end %>
+          </ul>
+        <% else %>
+          <%= link_to url, item.html_options.merge(class: "athena-nav #{'is-active selected' if active}") do %>
+            <span class="athena-nav-ic">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><%== athena_nav_icon.call(item.label(self)) %></svg>
+            </span>
+            <span class="athena-nav-label"><%= item.label(self) %></span>
+            <span class="athena-nav-spark"></span>
+          <% end %>
+        <% end %>
+      </li>
+    <% end %>
+  </ul>
+</div>
