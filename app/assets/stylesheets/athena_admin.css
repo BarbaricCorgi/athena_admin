@@ -126,6 +126,7 @@
 
   .athena-nav {
     position: relative; display: flex; align-items: center; gap: 11px;
+    text-align: start; /* parent (section) rows are <button>, which UA-defaults to center */
     padding: 8px 10px; border-radius: 12px; text-decoration: none;
     font-size: 13.5px; font-weight: 500; color: var(--athena-muted);
     border: 1px solid transparent;
